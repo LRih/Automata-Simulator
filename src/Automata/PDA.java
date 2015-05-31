@@ -1,0 +1,95 @@
+package Automata;
+
+import java.util.ArrayList;
+import java.util.List;
+
+public final class PDA extends Automata
+{
+    //========================================================================= INITIALIZE
+    public PDA(String... stateNames)
+    {
+        super(stateNames);
+    }
+
+    //========================================================================= FUNCTIONS
+    public final void addTransition(String from, String to, char symbol, String subStack, String addStack)
+    {
+        addTransition(getState(from), new PDATransition(getState(to), symbol, subStack, addStack));
+    }
+
+    protected final String getRunTrace(String input)
+    {
+        return getRunTrace(initialState(), input, "", initialState().name, new ArrayList<State>());
+    }
+    private String getRunTrace(State currentState, String input, String stack, String trace, List<State> lambdaChain)
+    {
+        if (input.length() == 0 && stack.length() == 0 && currentState.isFinal)
+            return trace;
+
+        for (Transition t : currentState.transitions)
+        {
+            PDATransition transition = (PDATransition)t;
+
+            if ((transition.symbol == LAMBDA || (input.length() > 0 && transition.symbol == input.charAt(0))) &&
+                (transition.subStack.isEmpty() || (stack.startsWith(transition.subStack))))
+            {
+                String newInput = (transition.symbol == LAMBDA ? input : input.substring(1));
+                String newStack = stack.substring(transition.subStack.length()) + transition.addStack;
+                String newTrace = trace + " > " + transition.target.name + "(" + transition.symbol + "," + (newStack.isEmpty() ? LAMBDA : newStack) + ")";
+                List<State> newLambdaChain = new ArrayList<State>(lambdaChain);
+
+                if (transition.isLambda())
+                {
+                    if (newLambdaChain.contains(transition.target)) continue;
+                    else newLambdaChain.add(transition.target);
+                }
+                else newLambdaChain.clear();
+
+                String runTrace = getRunTrace(transition.target, newInput, newStack, newTrace, newLambdaChain);
+
+                if (runTrace.length() > 0)
+                    return runTrace;
+            }
+        }
+
+        return "";
+    }
+
+    //========================================================================= CLASSES
+    private final class PDATransition extends Transition
+    {
+        protected final char symbol;
+        protected final String subStack;
+        protected final String addStack;
+
+        public PDATransition(State target, char symbol, String subStack, String addStack)
+        {
+            super(target);
+            this.symbol = symbol;
+            this.subStack = subStack;
+            this.addStack = addStack;
+        }
+
+        public final boolean equals(Object obj)
+        {
+            if (!(obj instanceof PDATransition))
+                return false;
+
+            PDATransition t = (PDATransition)obj;
+            if (symbol != t.symbol || !subStack.equals(t.subStack) || !addStack.equals(t.addStack)) return false;
+            else return super.equals(obj);
+        }
+
+        public final String toString()
+        {
+            String sub = (subStack.isEmpty() ? "" : " - " + subStack);
+            String add = (addStack.isEmpty() ? "" : " + " + addStack);
+            return symbol + sub + add;
+        }
+
+        public final boolean isLambda()
+        {
+            return symbol == LAMBDA && subStack.isEmpty() && addStack.isEmpty();
+        }
+    }
+}
