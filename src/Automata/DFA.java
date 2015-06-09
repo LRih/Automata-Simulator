@@ -23,7 +23,7 @@ public final class DFA extends Automata
 
     public final Trace getTrace(String input)
     {
-        return getTrace(initialState(), input, new Trace(initialState().name, input));
+        return getTrace(initialState(), input, new Trace(input, initialState().name));
     }
     private Trace getTrace(State currentState, String input, Trace trace)
     {

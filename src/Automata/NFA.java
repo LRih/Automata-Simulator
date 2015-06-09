@@ -19,7 +19,7 @@ public final class NFA extends Automata
 
     public final Trace getTrace(String input)
     {
-       return getTrace(initialState(), input, new Trace(initialState().name, input), new ArrayList<State>());
+       return getTrace(initialState(), input, new Trace(input, initialState().name), new ArrayList<State>());
     }
     private Trace getTrace(State currentState, String input, Trace trace, List<State> lambdaChain)
     {

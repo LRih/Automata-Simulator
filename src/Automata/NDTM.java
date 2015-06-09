@@ -18,7 +18,7 @@ public final class NDTM extends Automata
 
     public final Trace getTrace(String input)
     {
-        return getTrace(initialState(), (LAMBDA + input + LAMBDA).toCharArray(), 0, new Trace(initialState().name, input));
+        return getTrace(initialState(), (LAMBDA + input + LAMBDA).toCharArray(), 0, new Trace(input, initialState().name));
     }
     private Trace getTrace(State currentState, char[] input, int index, Trace trace)
     {

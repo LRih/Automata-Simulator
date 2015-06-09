@@ -6,17 +6,16 @@ import java.util.List;
 public final class Trace
 {
     //========================================================================= VARIABLES
-    private final String _start;
     private final String _input;
     private List<String> _states;
     private boolean _isAccepted;
 
     //========================================================================= INITIALIZE
-    public Trace(String start, String input)
+    public Trace(String input, String start)
     {
-        _start = start;
         _input = input;
         _states = new ArrayList<String>();
+        _states.add(start);
         _isAccepted = false;
     }
 
@@ -27,7 +26,7 @@ public final class Trace
     }
     public final Trace add(String state, String trace)
     {
-        Trace copy = new Trace(_start, _input);
+        Trace copy = new Trace(_input, _states.get(0));
         copy._states = (List<String>)((ArrayList)_states).clone();
         copy._isAccepted = _isAccepted;
 
@@ -48,9 +47,11 @@ public final class Trace
         if (isAccepted())
         {
             builder.append(String.format("Accept (%s): ", input));
-            builder.append(_start);
-            for (String state : _states)
-                builder.append(" > ").append(state);
+            for (int i = 0; i < _states.size(); i++)
+            {
+                if (i > 0) builder.append(" > ");
+                builder.append(_states.get(i));
+            }
         }
         else
             builder.append(String.format("Reject (%s)", input));
