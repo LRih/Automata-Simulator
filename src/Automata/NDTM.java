@@ -16,14 +16,14 @@ public final class NDTM extends Automata
         addTransition(getState(from), new TMTransition(getState(to), read, write, move));
     }
 
-    protected final String getRunTrace(String input)
+    public final Trace getTrace(String input)
     {
-        return getRunTrace(initialState(), (LAMBDA + input + LAMBDA).toCharArray(), 0, initialState().name);
+        return getTrace(initialState(), (LAMBDA + input + LAMBDA).toCharArray(), 0, new Trace(initialState().name, input));
     }
-    private String getRunTrace(State currentState, char[] input, int index, String trace)
+    private Trace getTrace(State currentState, char[] input, int index, Trace trace)
     {
         if (index < 0 || index == input.length)
-            return "";
+            return trace;
 
         boolean foundTransition = false;
 
@@ -38,16 +38,17 @@ public final class NDTM extends Automata
                 char[] newInput = Arrays.copyOf(input, input.length);
                 newInput[index] = transition.write;
                 int newIndex = index + transition.move.value();
-                String newTrace = trace + " > " + transition.target.name + "(" + createInputTrace(newInput, newIndex) + ")";
 
-                String runTrace = getRunTrace(transition.target, newInput, newIndex, newTrace);
+                Trace runTrace = getTrace(transition.target, newInput, newIndex, trace.add(transition.target.name, createInputTrace(newInput, newIndex)));
 
-                if (runTrace.length() > 0)
+                if (runTrace.isAccepted())
                     return runTrace;
             }
         }
 
-        return (currentState.isFinal && !foundTransition ? trace : "");
+        if (currentState.isFinal && !foundTransition)
+            trace.accept();
+        return trace;
     }
 
     private String createInputTrace(char[] input, int index)

@@ -1,4 +1,5 @@
 import Automata.DFA;
+import Automata.Trace;
 import Utils.Strings;
 
 public final class Main
@@ -15,7 +16,10 @@ public final class Main
 
         for (String str : Strings.createAllStrings(new char[] { '0', '1' }, 0, 6))
         {
-            boolean test1 = dfa.isAccept(str);
+            Trace trace = dfa.getTrace(str);
+            System.out.println(trace.toString());
+
+            boolean test1 = trace.isAccepted();
             boolean test2 = Strings.countSymbols(str, '1') % 2 == 0;
 
             if (test1 != test2)

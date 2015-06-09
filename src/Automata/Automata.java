@@ -35,20 +35,9 @@ public abstract class Automata
 
     public final boolean isAccept(String input)
     {
-        String trace = getRunTrace(input);
-        if (input.isEmpty()) input = String.valueOf(LAMBDA);
-        if (trace.length() > 0)
-        {
-            System.out.println(String.format("Accept (%s): %s", input, trace));
-            return true;
-        }
-        else
-        {
-            System.out.println(String.format("Reject (%s)", input));
-            return false;
-        }
+        return getTrace(input).isAccepted();
     }
-    protected abstract String getRunTrace(String input);
+    public abstract Trace getTrace(String input);
 
     protected final State getState(String name)
     {

@@ -17,14 +17,17 @@ public final class NFA extends Automata
         addTransition(getState(from), new NFATransition(getState(to), symbol));
     }
 
-    protected final String getRunTrace(String input)
+    public final Trace getTrace(String input)
     {
-       return getRunTrace(initialState(), input, initialState().name, new ArrayList<State>());
+       return getTrace(initialState(), input, new Trace(initialState().name, input), new ArrayList<State>());
     }
-    private String getRunTrace(State currentState, String input, String trace, List<State> lambdaChain)
+    private Trace getTrace(State currentState, String input, Trace trace, List<State> lambdaChain)
     {
         if (input.length() == 0 && currentState.isFinal)
+        {
+            trace.accept();
             return trace;
+        }
 
         for (Transition t : currentState.transitions)
         {
@@ -33,7 +36,6 @@ public final class NFA extends Automata
             if (transition.isLambda() || (input.length() > 0 && transition.symbol == input.charAt(0)))
             {
                 String newInput = (transition.isLambda() ? input : input.substring(1));
-                String newTrace = trace + " > " + transition.target.name + "(" + transition.symbol + ")";
                 List<State> newLambdaChain = new ArrayList<State>(lambdaChain);
 
                 if (transition.isLambda())
@@ -43,14 +45,14 @@ public final class NFA extends Automata
                 }
                 else newLambdaChain.clear();
 
-                String runTrace = getRunTrace(transition.target, newInput, newTrace, newLambdaChain);
+                Trace runTrace = getTrace(transition.target, newInput, trace.add(transition.target.name, transition.symbol), newLambdaChain);
 
-                if (runTrace.length() > 0)
+                if (runTrace.isAccepted())
                     return runTrace;
             }
         }
 
-        return "";
+        return trace;
     }
 
     //========================================================================= CLASSES

@@ -1,7 +1,4 @@
-import Automata.DFA;
-import Automata.NDTM;
-import Automata.NFA;
-import Automata.PDA;
+import Automata.*;
 import Utils.Strings;
 
 import org.junit.Test;
@@ -214,7 +211,7 @@ public final class MainTest
         DFA aMachine = create3aDFA();
         NFA bMachine = create3bNFA();
 
-        for (String str : Strings.createRandomStrings(100, new char[]{ 'a', 'b', 'c' }, 1, 10))
+        for (String str : Strings.createRandomStrings(100, new char[] { 'a', 'b', 'c' }, 1, 10))
         {
             boolean test1 = original.isAccept(str);
             boolean test2 = aMachine.isAccept(str);

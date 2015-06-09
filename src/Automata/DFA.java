@@ -21,14 +21,17 @@ public final class DFA extends Automata
         addTransition(getState(from), transition);
     }
 
-    protected final String getRunTrace(String input)
+    public final Trace getTrace(String input)
     {
-        return getRunTrace(initialState(), input, initialState().name);
+        return getTrace(initialState(), input, new Trace(initialState().name, input));
     }
-    private String getRunTrace(State currentState, String input, String trace)
+    private Trace getTrace(State currentState, String input, Trace trace)
     {
         if (input.length() == 0)
-            return (currentState.isFinal ? trace : "");
+        {
+            if (currentState.isFinal) trace.accept();
+            return trace;
+        }
 
         for (Transition t : currentState.transitions)
         {
@@ -37,15 +40,13 @@ public final class DFA extends Automata
             if (input.length() > 0 && transition.symbol == input.charAt(0))
             {
                 String newInput = input.substring(1);
-                String newTrace = trace + " > " + transition.target.name + "(" + transition.symbol + ")";
+                Trace runTrace = getTrace(transition.target, newInput, trace.add(transition.target.name, transition.symbol));
 
-                String runTrace = getRunTrace(transition.target, newInput, newTrace);
-
-                if (runTrace.length() > 0)
+                if (runTrace.isAccepted())
                     return runTrace;
             }
         }
 
-        return "";
+        return trace;
     }
 }

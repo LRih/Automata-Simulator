@@ -17,14 +17,17 @@ public final class PDA extends Automata
         addTransition(getState(from), new PDATransition(getState(to), symbol, subStack, addStack));
     }
 
-    protected final String getRunTrace(String input)
+    public final Trace getTrace(String input)
     {
-        return getRunTrace(initialState(), input, "", initialState().name, new ArrayList<State>());
+        return getTrace(initialState(), input, "", new Trace(initialState().name, input), new ArrayList<State>());
     }
-    private String getRunTrace(State currentState, String input, String stack, String trace, List<State> lambdaChain)
+    private Trace getTrace(State currentState, String input, String stack, Trace trace, List<State> lambdaChain)
     {
         if (input.length() == 0 && stack.length() == 0 && currentState.isFinal)
+        {
+            trace.accept();
             return trace;
+        }
 
         for (Transition t : currentState.transitions)
         {
@@ -35,7 +38,7 @@ public final class PDA extends Automata
             {
                 String newInput = (transition.symbol == LAMBDA ? input : input.substring(1));
                 String newStack = stack.substring(transition.subStack.length()) + transition.addStack;
-                String newTrace = trace + " > " + transition.target.name + "(" + transition.symbol + "," + (newStack.isEmpty() ? LAMBDA : newStack) + ")";
+                Trace newTrace = trace.add(transition.target.name, transition.symbol + "," + (newStack.isEmpty() ? LAMBDA : newStack));
                 List<State> newLambdaChain = new ArrayList<State>(lambdaChain);
 
                 if (transition.isLambda())
@@ -45,14 +48,14 @@ public final class PDA extends Automata
                 }
                 else newLambdaChain.clear();
 
-                String runTrace = getRunTrace(transition.target, newInput, newStack, newTrace, newLambdaChain);
+                Trace runTrace = getTrace(transition.target, newInput, newStack, newTrace, newLambdaChain);
 
-                if (runTrace.length() > 0)
+                if (runTrace.isAccepted())
                     return runTrace;
             }
         }
 
-        return "";
+        return trace;
     }
 
     //========================================================================= CLASSES
