@@ -28,7 +28,7 @@ public abstract class Automata
     }
 
     //========================================================================= FUNCTIONS
-    public final void addTransition(State from, Transition transition)
+    protected final void addTransition(State from, Transition transition)
     {
         from.addTransition(transition);
     }

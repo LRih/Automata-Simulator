@@ -37,7 +37,7 @@ public final class PDA extends Automata
                 (transition.subStack.isEmpty() || (stack.startsWith(transition.subStack))))
             {
                 String newInput = (transition.symbol == LAMBDA ? input : input.substring(1));
-                String newStack = stack.substring(transition.subStack.length()) + transition.addStack;
+                String newStack = transition.addStack + stack.substring(transition.subStack.length());
                 Trace newTrace = trace.add(transition.target.name, transition.symbol + "," + (newStack.isEmpty() ? LAMBDA : newStack));
                 List<State> newLambdaChain = new ArrayList<State>(lambdaChain);
 
