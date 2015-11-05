@@ -1,4 +1,4 @@
 # Automata-Simulator
 Simulates DFA, NFA, PDA and Turing machines.
-- Provides traces
-- Checks equivalence between two machines
+- Prints traces
+- Check equivalence between two machines
